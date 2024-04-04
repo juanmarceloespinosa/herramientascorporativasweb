@@ -1,6 +1,6 @@
 {
 	"name": "herramientascorporativasweb",
-	"version": "0.0.1",
+	"version": "0.0.7",
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
@@ -12,11 +12,13 @@
 		"format": "prettier --write .",
 		"version-inc": "npm version patch --no-git-tag-version",
 		"pm2": "pm2 start --name herramientas npm run start",
-		"start": "node build/index.js"
+		"start": "PORT=3001 node build/index.js",
+		"deploy-prod": "./deploy.sh .env.production herramientascorporativas"
 	},
 	"devDependencies": {
 		"@mdi/js": "^7.4.47",
 		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/adapter-node": "^5.0.1",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/eslint": "^8.56.0",
