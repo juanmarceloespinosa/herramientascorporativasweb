@@ -46,8 +46,7 @@
 
 	async function onSubmit(e: Event) {
 		window.grecaptcha.ready(async () => {
-			const token = await grecaptcha.execute(reCaptchaKey, { action: 'contact' });
-			console.log({ token });
+			const token = await window.grecaptcha.execute(reCaptchaKey, { action: 'contact' });
 			const form = e.target as HTMLFormElement;
 			const contact: Contact = formToObject(form);
 			const resp = await appFetchJson<ContactToken, Contact>(
