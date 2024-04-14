@@ -14,6 +14,9 @@ export type Contact = {
 	closed: boolean;
 	username: string;
 };
+export type ContactToken = Contact & {
+	token: string;
+};
 
 export type ContactInsert = Omit<Contact, 'id' | 'created_at' | 'updated_at'>;
 export type ContactUpdate = Pick<Contact, 'id' | 'closed' | 'username'>;

@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import ErrorDetails from '$lib/components/details/ErrorDetails.svelte';
 	import LayoutTitle from '$lib/components/layouts/LayoutTitle.svelte';
-	import { contactSchema, contactSchemaDef } from '$lib/models/core';
+	import { contactSchema, type Contact, type ContactToken } from '$lib/models/core';
 	import Columns from '$lib/svelma/components/common/Columns.svelte';
 	import Content from '$lib/svelma/components/common/Content.svelte';
 	import IconText from '$lib/svelma/components/common/IconText.svelte';
@@ -11,6 +10,8 @@
 	import Label from '$lib/svelma/components/forms/Label.svelte';
 	import { bulmaHelpers } from '$lib/svelma/utils/bulma';
 	import { appIcons } from '$lib/utils/appIcons';
+	import { appFetchJson, formToObject } from '$lib/utils/fetch.js';
+	import type { PageData } from './$types.js';
 
 	const errorName = contactSchema.error();
 	const errorEmail = contactSchema.error();
@@ -27,9 +28,10 @@
 	const useBudget = contactSchema.def.budget?.actionInput(errorBudget);
 	const useMessage = contactSchema.def.message?.actionTextarea(errorMessage);
 
-	export let form;
+	export let data: PageData;
 
-	$: errors = contactSchema.flatErrors(form?.errors);
+	$: reCaptchaKey = data.reCaptchaKey;
+
 	$: isValid =
 		[
 			$errorName,
@@ -41,7 +43,30 @@
 			$errorMessage
 		].filter(Boolean).length == 0;
 	$: console.log({ isValid });
+
+	async function onSubmit(e: Event) {
+		window.grecaptcha.ready(async () => {
+			const token = await grecaptcha.execute(reCaptchaKey, { action: 'contact' });
+			console.log({ token });
+			const form = e.target as HTMLFormElement;
+			const contact: Contact = formToObject(form);
+			const resp = await appFetchJson<ContactToken, Contact>(
+				{ url: '' },
+				{ method: 'POST' },
+				{
+					...contact,
+					token
+				}
+			);
+			console.log({ resp });
+			form.reset();
+		});
+	}
 </script>
+
+<svelte:head>
+	<script src="https://www.google.com/recaptcha/api.js?render={reCaptchaKey}"></script>
+</svelte:head>
 
 <LayoutTitle title="Contacto">
 	<Columns let:Column>
@@ -52,7 +77,7 @@
 						><br />
 						<strong>NIT: 381576024</strong>
 						<br />
-						<strong>Dirección – Santa Cruz</strong>
+						<strong>Dirección - Santa Cruz</strong>
 						<br />
 						Radial 25 y 5to anillo
 						<br />
@@ -66,8 +91,7 @@
 					Si desea más información, o tiene algún requerimiento o consulta, por favor rellene sus datos,
 					en breve nos comunicaremos con usted.
 				</Content>
-				<ErrorDetails {errors} />
-				<form action="?/contact" method="POST" use:enhance>
+				<form on:submit|preventDefault={onSubmit}>
 					<input type="hidden" name="closed" value="false" />
 					<input type="hidden" name="username" value="" />
 					<Field helpColor="danger" helpText={$errorName || ''}>

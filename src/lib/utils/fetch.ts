@@ -104,3 +104,11 @@ export function formToObject<T extends {}>(form: HTMLFormElement): T {
 	const formData = new FormData(form);
 	return formDataToObject(formData);
 }
+
+export function objectToFormData<T extends {}>(src: T): FormData {
+	const formData = new FormData();
+	Object.entries(src).forEach(([key, val]) => {
+		formData.append(key, `${val}`);
+	});
+	return formData;
+}
