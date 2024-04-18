@@ -1,75 +1,62 @@
 <script lang="ts">
-	import { type ClientContact } from '$lib/models/core';
-	import Icon from '$lib/svelma/components/common/Icon.svelte';
-	import { getContactTypeIcons } from '$lib/utils/appIcons';
-	import type { MenuAction } from '$lib/utils/stores';
-	import MenuActionButton from '../MenuActionButton.svelte';
+	import type { Contact } from '$lib/models/core';
+	import Button from '$lib/svelma/components/common/Button.svelte';
+	import IconText from '$lib/svelma/components/common/IconText.svelte';
+	import { icons } from '$lib/svelma/components/common/icons';
+	import { createEventDispatcher } from 'svelte';
+	import Detail from './Detail.svelte';
 
-	export let contact: ClientContact;
-	export let actions: MenuAction[] | undefined = undefined;
+	const dispatch = createEventDispatcher();
+
+	export let contact: Contact;
 	export let borderless: boolean | undefined = undefined;
 
-	$: icon = getContactTypeIcons(contact.type);
+	function onClose(contact: Contact) {
+		return () => {
+			dispatch('close', contact);
+		};
+	}
 </script>
 
-<div class="details view" class:is-borderless={borderless}>
-	<input type="hidden" name="id" value={contact.id} />
-	<input type="hidden" name="type" value={contact.type} />
-	<input type="hidden" name="description" value={contact.description} />
-	<div class="type">
-		<Icon {icon} />
+<div class="details" class:is-borderless={borderless}>
+	<div class="detail-column">
+		<Detail label="Nombre">{contact.name}</Detail>
+		<Detail label="Correo Electrónico">{contact.email}</Detail>
+		<Detail label="Teléfono">{contact.phone || ''}</Detail>
+		<Detail label="Mensaje">{contact.message || ''}</Detail>
 	</div>
-	<p class="description title is-5">{contact.description}</p>
-	<div class="value">
-		{#if $$slots.default}
-			<slot />
-		{:else}
-			<div class="pre">{contact.value}</div>
-		{/if}
+	<div class="detail-column">
+		<Detail label="Asunto">{contact.subject || ''}</Detail>
+		<Detail label="Servicio">{contact.service || ''}</Detail>
+		<Detail label="Presupuesto">{contact.budget || ''}</Detail>
 	</div>
-	{#if actions}
-		<div class="actions">
-			{#each actions as action}
-				<MenuActionButton {action} />
-			{/each}
-		</div>
-	{/if}
+	<div class="actions">
+		<Button size="small" color="link" on:click={onClose(contact)}>
+			<IconText icon={icons.close} text="Cerrar" />
+		</Button>
+	</div>
 </div>
 
 <style lang="less">
 	.details {
+		position: relative;
 		padding: 1rem;
 		border: 1px solid lightgray;
 		border-radius: 0.5rem;
-		display: grid;
-		grid-template-columns: auto 1fr;
-		grid-template-rows: auto auto auto;
-		grid-template-areas:
-			'type    description actions'
-			'value   value       actions';
+		display: flex;
+		flex-direction: row;
 		width: 100%;
 
-		&.is-borderless {
-			padding: 0;
-			border: none;
+		.detail-column {
+			display: flex;
+			flex-direction: column;
+			flex: 1;
 		}
-		.type {
-			grid-area: type;
-		}
-		.description {
-			grid-area: description;
-			margin-bottom: 0;
-			text-wrap: pretty;
-			text-align: left;
-		}
-		.value {
-			grid-area: value;
-			text-align: left;
-		}
-		.pre {
-			white-space: pre;
-		}
+
 		.actions {
+			position: absolute;
+			top: 0;
+			right: 0;
 			grid-area: actions;
 			display: flex;
 			flex-direction: column;
