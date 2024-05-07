@@ -49,14 +49,16 @@
 
 <header id="main-header">
 	<div class="is-hidden-mobile">
-		<img
+		<a href={links[0].href}>
+			<img
 			src={PUBLIC_HOME_LOGO_SRC}
 			class="custom-logo"
 			alt={PUBLIC_HOME_LOGO_ALT}
 			decoding="async"
 			srcset="{PUBLIC_HOME_LOGO_SRC} 575w, {PUBLIC_HOME_LOGO_SRCALT} 300w"
 			sizes="(max-width: 575px) 100vw, 575px"
-		/>
+			/>
+		</a>
 		<div class="spacer">&nbsp;</div>
 		<div class="links">
 			{#each links as link (link.href)}
