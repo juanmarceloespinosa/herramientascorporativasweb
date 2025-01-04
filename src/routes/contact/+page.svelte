@@ -73,18 +73,16 @@
 			<div class="page">
 				<Content>
 					<center
-						><br />
-						<strong>NIT: 381576024</strong>
-						<br />
+						>
 						<strong>Dirección - Santa Cruz</strong>
 						<br />
-						Radial 25 y 5to anillo
+						Radial 26 y 5to anillo
 						<br />
 						Barrio 15 de Julio
 						<br />
 						C/3 S/N
 						<br />
-						Telf. 76060976
+						Telf/Whatsapp. 76060976
 					</center>
 					<br />
 					Si desea más información, o tiene algún requerimiento o consulta, por favor rellene sus datos,
