@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_CONTACT_KEY, PUBLIC_CONTACT_URL } from '$env/static/public';
 	import ErrorDetails from '$lib/components/details/ErrorDetails.svelte';
 	import LayoutTitle from '$lib/components/layouts/LayoutTitle.svelte';
 	import { contactSchema, type Contact, type ContactToken } from '$lib/models/core';
@@ -28,10 +29,6 @@
 	const useBudget = contactSchema.def.budget?.actionInput(errorBudget);
 	const useMessage = contactSchema.def.message?.actionTextarea(errorMessage);
 
-	export let data: PageData;
-
-	$: reCaptchaKey = data.reCaptchaKey;
-
 	$: isValid =
 		[
 			$errorName,
@@ -42,38 +39,32 @@
 			$errorBudget,
 			$errorMessage
 		].filter(Boolean).length == 0;
-	$: console.log({ isValid });
 
 	async function onSubmit(e: Event) {
-		window.grecaptcha.ready(async () => {
-			const token = await window.grecaptcha.execute(reCaptchaKey, { action: 'contact' });
-			const form = e.target as HTMLFormElement;
-			const contact: Contact = formToObject(form);
-			const resp = await appFetchJson<ContactToken, Contact>(
-				{ url: '' },
-				{ method: 'POST' },
-				{
-					...contact,
-					token
-				}
-			);
-			console.log({ resp });
-			form.reset();
+		const form = e.target as HTMLFormElement;
+		const contact: Contact = formToObject(form);
+		const body = {
+			token: PUBLIC_CONTACT_KEY,
+			...contact
+		};
+		const resp = await fetch(PUBLIC_CONTACT_URL, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(body),
+			mode: 'no-cors'
 		});
+		form.reset();
 	}
 </script>
-
-<svelte:head>
-	<script src="https://www.google.com/recaptcha/api.js?render={reCaptchaKey}"></script>
-</svelte:head>
 
 <LayoutTitle title="Contacto">
 	<Columns let:Column>
 		<Column size="6" offset="3">
 			<div class="page">
 				<Content>
-					<center
-						>
+					<center>
 						<strong>Dirección - Santa Cruz</strong>
 						<br />
 						Radial 26 y 5to anillo
@@ -89,8 +80,6 @@
 					en breve nos comunicaremos con usted.
 				</Content>
 				<form on:submit|preventDefault={onSubmit}>
-					<input type="hidden" name="closed" value="false" />
-					<input type="hidden" name="username" value="" />
 					<Field helpColor="danger" helpText={$errorName || ''}>
 						<Label id="name">{contactSchema.def.name.title}</Label>
 						<Control>
