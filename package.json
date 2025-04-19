@@ -1,6 +1,6 @@
 {
 	"name": "herramientascorporativasweb",
-	"version": "0.0.23",
+	"version": "0.0.24",
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
@@ -13,6 +13,7 @@
 		"deploy": "npm run version-inc; npm run prepare-env; git add . && git commit -am v$(jq -r '.version' package.json)",
 		"version-inc": "./run-version.sh",
 		"pm2": "pm2 start --name herramientas npm run start",
+		"prepare-env": "cp .env .env.default",
 		"build-env": "echo '' >> .env; cat .env.default >> .env",
 		"start": "node build/index.js",
 		"build-prod": "npm run build-env; vite build",
